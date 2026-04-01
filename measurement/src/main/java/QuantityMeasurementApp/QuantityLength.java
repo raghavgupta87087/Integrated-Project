@@ -5,6 +5,9 @@ public class QuantityLength {
     private final double value;
     private final LengthUnit unit;
 
+    // ✅ Epsilon for floating-point comparison
+    private static final double EPSILON = 0.0001;
+
     // Constructor
     public QuantityLength(double value, LengthUnit unit) {
         if (unit == null) {
@@ -23,12 +26,12 @@ public class QuantityLength {
     @Override
     public boolean equals(Object obj) {
 
-        // Reflexive check
+        // Same reference
         if (this == obj) {
             return true;
         }
 
-        // Null or different class
+        // Null or different type
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
@@ -36,17 +39,17 @@ public class QuantityLength {
         // Type casting
         QuantityLength other = (QuantityLength) obj;
 
-        // Compare after converting to same base unit (feet)
-        return Double.compare(this.toFeet(), other.toFeet()) == 0;
+        // ✅ Use epsilon instead of Double.compare
+        return Math.abs(this.toFeet() - other.toFeet()) < EPSILON;
     }
 
-    // (Optional but recommended)
+    // ✅ Recommended when overriding equals
     @Override
     public int hashCode() {
         return Double.hashCode(toFeet());
     }
 
-    // (Optional helper for debugging)
+    // (Optional) helpful for debugging
     @Override
     public String toString() {
         return "QuantityLength{" +
