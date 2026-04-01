@@ -5,8 +5,7 @@ import org.junit.jupiter.api.Test;
 
 class MeasurementApplicationTests {
 
-    // ✅ Feet Tests
-    
+    // ================= UC1: Feet =================
 
     @Test
     void testFeetEquality_SameValue() {
@@ -37,10 +36,10 @@ class MeasurementApplicationTests {
     @Test
     void testFeetEquality_SameReference() {
         MeasurementApplication.Feet f1 = new MeasurementApplication.Feet(89.0);
-        Assertions.assertTrue(f1.equals(f1));  // ✅ FIXED
+        Assertions.assertTrue(f1.equals(f1));
     }
 
-    // ✅ Inches Tests (IMPORTANT for UC2)
+    // ================= UC2: Inches =================
 
     @Test
     void testInchesEquality_SameValue() {
@@ -74,7 +73,7 @@ class MeasurementApplicationTests {
         Assertions.assertTrue(i1.equals(i1));
     }
 
-        // ✅ UC3 Tests (Generic QuantityLength)
+    // ================= UC3: QuantityLength =================
 
     @Test
     void testEquality_FeetToFeet_SameValue() {
@@ -86,8 +85,8 @@ class MeasurementApplicationTests {
 
     @Test
     void testEquality_InchToInch_SameValue() {
-        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.INCH);
-        QuantityLength q2 = new QuantityLength(1.0, LengthUnit.INCH);
+        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.INCHES);
+        QuantityLength q2 = new QuantityLength(1.0, LengthUnit.INCHES);
 
         Assertions.assertEquals(q1, q2);
     }
@@ -95,14 +94,14 @@ class MeasurementApplicationTests {
     @Test
     void testEquality_FeetToInch_EquivalentValue() {
         QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
-        QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCH);
+        QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCHES);
 
         Assertions.assertEquals(q1, q2);
     }
 
     @Test
     void testEquality_InchToFeet_EquivalentValue() {
-        QuantityLength q1 = new QuantityLength(12.0, LengthUnit.INCH);
+        QuantityLength q1 = new QuantityLength(12.0, LengthUnit.INCHES);
         QuantityLength q2 = new QuantityLength(1.0, LengthUnit.FEET);
 
         Assertions.assertEquals(q1, q2);
@@ -118,8 +117,8 @@ class MeasurementApplicationTests {
 
     @Test
     void testEquality_InchToInch_DifferentValue() {
-        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.INCH);
-        QuantityLength q2 = new QuantityLength(2.0, LengthUnit.INCH);
+        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.INCHES);
+        QuantityLength q2 = new QuantityLength(2.0, LengthUnit.INCHES);
 
         Assertions.assertNotEquals(q1, q2);
     }
@@ -127,14 +126,12 @@ class MeasurementApplicationTests {
     @Test
     void testEquality_SameReference() {
         QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
-
         Assertions.assertTrue(q1.equals(q1));
     }
 
     @Test
     void testEquality_NullComparison() {
         QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
-
         Assertions.assertFalse(q1.equals(null));
     }
 
@@ -143,5 +140,39 @@ class MeasurementApplicationTests {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             new QuantityLength(1.0, null);
         });
+    }
+
+    // ================= UC4: Extended Units =================
+
+    @Test
+    void testEquality_YardToFeet() {
+        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.YARDS);
+        QuantityLength q2 = new QuantityLength(3.0, LengthUnit.FEET);
+
+        Assertions.assertEquals(q1, q2);
+    }
+
+    @Test
+    void testEquality_YardToInches() {
+        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.YARDS);
+        QuantityLength q2 = new QuantityLength(36.0, LengthUnit.INCHES);
+
+        Assertions.assertEquals(q1, q2);
+    }
+
+    @Test
+    void testEquality_CmToInches() {
+        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.CENTIMETERS);
+        QuantityLength q2 = new QuantityLength(0.393701, LengthUnit.INCHES);
+
+        Assertions.assertEquals(q1, q2);
+    }
+
+    @Test
+    void testEquality_CmToFeet_NotEqual() {
+        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.CENTIMETERS);
+        QuantityLength q2 = new QuantityLength(1.0, LengthUnit.FEET);
+
+        Assertions.assertNotEquals(q1, q2);
     }
 }

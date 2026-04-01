@@ -2,8 +2,8 @@ package QuantityMeasurementApp;
 
 public class QuantityLength {
 
-    private double value;
-    private LengthUnit unit;
+    private final double value;
+    private final LengthUnit unit;
 
     // Constructor
     public QuantityLength(double value, LengthUnit unit) {
@@ -23,12 +23,12 @@ public class QuantityLength {
     @Override
     public boolean equals(Object obj) {
 
-        // Same reference
+        // Reflexive check
         if (this == obj) {
             return true;
         }
 
-        // Null or different type
+        // Null or different class
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
@@ -36,7 +36,22 @@ public class QuantityLength {
         // Type casting
         QuantityLength other = (QuantityLength) obj;
 
-        // Compare after converting to same unit (feet)
+        // Compare after converting to same base unit (feet)
         return Double.compare(this.toFeet(), other.toFeet()) == 0;
+    }
+
+    // (Optional but recommended)
+    @Override
+    public int hashCode() {
+        return Double.hashCode(toFeet());
+    }
+
+    // (Optional helper for debugging)
+    @Override
+    public String toString() {
+        return "QuantityLength{" +
+                "value=" + value +
+                ", unit=" + unit +
+                '}';
     }
 }
