@@ -73,4 +73,75 @@ class MeasurementApplicationTests {
         MeasurementApplication.Inches i1 = new MeasurementApplication.Inches(10.0);
         Assertions.assertTrue(i1.equals(i1));
     }
+
+        // ✅ UC3 Tests (Generic QuantityLength)
+
+    @Test
+    void testEquality_FeetToFeet_SameValue() {
+        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
+        QuantityLength q2 = new QuantityLength(1.0, LengthUnit.FEET);
+
+        Assertions.assertEquals(q1, q2);
+    }
+
+    @Test
+    void testEquality_InchToInch_SameValue() {
+        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.INCH);
+        QuantityLength q2 = new QuantityLength(1.0, LengthUnit.INCH);
+
+        Assertions.assertEquals(q1, q2);
+    }
+
+    @Test
+    void testEquality_FeetToInch_EquivalentValue() {
+        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
+        QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCH);
+
+        Assertions.assertEquals(q1, q2);
+    }
+
+    @Test
+    void testEquality_InchToFeet_EquivalentValue() {
+        QuantityLength q1 = new QuantityLength(12.0, LengthUnit.INCH);
+        QuantityLength q2 = new QuantityLength(1.0, LengthUnit.FEET);
+
+        Assertions.assertEquals(q1, q2);
+    }
+
+    @Test
+    void testEquality_FeetToFeet_DifferentValue() {
+        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
+        QuantityLength q2 = new QuantityLength(2.0, LengthUnit.FEET);
+
+        Assertions.assertNotEquals(q1, q2);
+    }
+
+    @Test
+    void testEquality_InchToInch_DifferentValue() {
+        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.INCH);
+        QuantityLength q2 = new QuantityLength(2.0, LengthUnit.INCH);
+
+        Assertions.assertNotEquals(q1, q2);
+    }
+
+    @Test
+    void testEquality_SameReference() {
+        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
+
+        Assertions.assertTrue(q1.equals(q1));
+    }
+
+    @Test
+    void testEquality_NullComparison() {
+        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
+
+        Assertions.assertFalse(q1.equals(null));
+    }
+
+    @Test
+    void testEquality_NullUnit() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            new QuantityLength(1.0, null);
+        });
+    }
 }
