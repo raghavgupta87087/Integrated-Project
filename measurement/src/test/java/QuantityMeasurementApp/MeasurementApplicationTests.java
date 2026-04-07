@@ -5,7 +5,11 @@ import org.junit.jupiter.api.Test;
 
 class MeasurementApplicationTests {
 
+<<<<<<< HEAD
     // ================= UC1: Feet =================
+=======
+    // ✅ Feet Tests
+>>>>>>> b2cfa3b (Updated files)
 
     @Test
     void testFeetEquality_SameValue() {
@@ -36,10 +40,17 @@ class MeasurementApplicationTests {
     @Test
     void testFeetEquality_SameReference() {
         MeasurementApplication.Feet f1 = new MeasurementApplication.Feet(89.0);
+<<<<<<< HEAD
         Assertions.assertTrue(f1.equals(f1));
     }
 
     // ================= UC2: Inches =================
+=======
+        Assertions.assertTrue(f1.equals(f1));  // ✅ FIXED
+    }
+
+    // ✅ Inches Tests (IMPORTANT for UC2)
+>>>>>>> b2cfa3b (Updated files)
 
     @Test
     void testInchesEquality_SameValue() {
@@ -72,6 +83,7 @@ class MeasurementApplicationTests {
         MeasurementApplication.Inches i1 = new MeasurementApplication.Inches(10.0);
         Assertions.assertTrue(i1.equals(i1));
     }
+<<<<<<< HEAD
 
     // ================= UC3: QuantityLength =================
 
@@ -175,4 +187,6 @@ class MeasurementApplicationTests {
 
         Assertions.assertNotEquals(q1, q2);
     }
+=======
+>>>>>>> b2cfa3b (Updated files)
 }

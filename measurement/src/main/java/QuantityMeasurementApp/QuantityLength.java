@@ -2,11 +2,16 @@ package QuantityMeasurementApp;
 
 public class QuantityLength {
 
+<<<<<<< HEAD
     private final double value;
     private final LengthUnit unit;
 
     // ✅ Epsilon for floating-point comparison
     private static final double EPSILON = 0.0001;
+=======
+    private double value;
+    private LengthUnit unit;
+>>>>>>> b2cfa3b (Updated files)
 
     // Constructor
     public QuantityLength(double value, LengthUnit unit) {
@@ -39,6 +44,7 @@ public class QuantityLength {
         // Type casting
         QuantityLength other = (QuantityLength) obj;
 
+<<<<<<< HEAD
         // ✅ Use epsilon instead of Double.compare
         return Math.abs(this.toFeet() - other.toFeet()) < EPSILON;
     }
@@ -56,5 +62,9 @@ public class QuantityLength {
                 "value=" + value +
                 ", unit=" + unit +
                 '}';
+=======
+        // Compare after converting to same unit (feet)
+        return Double.compare(this.toFeet(), other.toFeet()) == 0;
+>>>>>>> b2cfa3b (Updated files)
     }
 }
