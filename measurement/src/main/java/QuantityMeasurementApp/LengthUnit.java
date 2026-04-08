@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 package QuantityMeasurementApp;
 
 public enum LengthUnit {
@@ -21,19 +20,5 @@ public enum LengthUnit {
     // Convert any unit to base unit (feet)
     public double toFeet(double value) {
         return value * conversionFactor;
-=======
-enum LengthUnit {
-    FEET(1.0),
-    INCH(1.0 / 12);
-
-    private final double factor;
-
-    LengthUnit(double factor) {
-        this.factor = factor;
-    }
-
-    public double toFeet(double value) {
-        return value * factor;
->>>>>>> b2cfa3b (Updated files)
     }
 }

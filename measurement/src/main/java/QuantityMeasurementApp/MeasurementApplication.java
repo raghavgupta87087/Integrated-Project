@@ -1,18 +1,8 @@
 package QuantityMeasurementApp;
 
-<<<<<<< HEAD
 public class MeasurementApplication {
 
     // ===== UC1: Feet =====
-=======
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-//@SpringBootApplication
-public class MeasurementApplication {
-
-    // Static Feet class
->>>>>>> b2cfa3b (Updated files)
     static class Feet {
         private final double value;
 
@@ -22,50 +12,25 @@ public class MeasurementApplication {
 
         @Override
         public boolean equals(Object obj) {
-<<<<<<< HEAD
             if (this == obj) return true;
             if (obj == null || getClass() != obj.getClass()) return false;
-=======
-            if (this == obj)
-                return true;
-
-            if (obj == null || getClass() != obj.getClass())
-                return false;
->>>>>>> b2cfa3b (Updated files)
 
             Feet other = (Feet) obj;
             return Double.compare(this.value, other.value) == 0;
         }
     }
 
-<<<<<<< HEAD
     // ===== UC2: Inches =====
     static class Inches {
         private final double value;
-=======
-    // ✅ FIXED: Make Inches static
-    static class Inches {
-        private double value;
->>>>>>> b2cfa3b (Updated files)
 
         public Inches(double value) {
             this.value = value;
         }
 
-<<<<<<< HEAD
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
-=======
-        public double getValue() {
-            return value;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-
->>>>>>> b2cfa3b (Updated files)
             if (obj == null || !(obj instanceof Inches)) return false;
 
             Inches other = (Inches) obj;
@@ -73,7 +38,6 @@ public class MeasurementApplication {
         }
     }
 
-<<<<<<< HEAD
     // ===== UC2 Methods =====
     public static boolean compareFeet(double val1, double val2) {
         return new Feet(val1).equals(new Feet(val2));
@@ -132,27 +96,4 @@ public class MeasurementApplication {
         QuantityLength q12 = new QuantityLength(2.0, LengthUnit.YARDS);
         System.out.println("2 Yards == 2 Yards: " + q11.equals(q12)); // true
     }
-=======
-    // ✅ Separate methods (as required in UC2)
-    public static boolean compareFeet(double val1, double val2) {
-        Feet f1 = new Feet(val1);
-        Feet f2 = new Feet(val2);
-        return f1.equals(f2);
-    }
-
-    public static boolean compareInches(double val1, double val2) {
-        Inches i1 = new Inches(val1);
-        Inches i2 = new Inches(val2);
-        return i1.equals(i2);
-    }
-
-   public static void main(String[] args) {
-
-    // Feet comparison
-    System.out.println("Feet Equal: " + compareFeet(34.5, 34.5));
-
-    // Inches comparison
-    System.out.println("Inches Equal: " + compareInches(10.0, 10.0));
-}
->>>>>>> b2cfa3b (Updated files)
 }

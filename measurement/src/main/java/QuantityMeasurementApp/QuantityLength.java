@@ -44,7 +44,6 @@ public class QuantityLength {
         // Type casting
         QuantityLength other = (QuantityLength) obj;
 
-<<<<<<< HEAD
         // ✅ Use epsilon instead of Double.compare
         return Math.abs(this.toFeet() - other.toFeet()) < EPSILON;
     }
@@ -62,9 +61,5 @@ public class QuantityLength {
                 "value=" + value +
                 ", unit=" + unit +
                 '}';
-=======
-        // Compare after converting to same unit (feet)
-        return Double.compare(this.toFeet(), other.toFeet()) == 0;
->>>>>>> b2cfa3b (Updated files)
     }
 }
