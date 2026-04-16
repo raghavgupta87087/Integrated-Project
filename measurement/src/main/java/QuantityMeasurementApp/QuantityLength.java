@@ -2,16 +2,11 @@ package QuantityMeasurementApp;
 
 public class QuantityLength {
 
-<<<<<<< HEAD
     private final double value;
     private final LengthUnit unit;
 
     // ✅ Epsilon for floating-point comparison
     private static final double EPSILON = 0.0001;
-=======
-    private double value;
-    private LengthUnit unit;
->>>>>>> b2cfa3b (Updated files)
 
     // Constructor
     public QuantityLength(double value, LengthUnit unit) {
