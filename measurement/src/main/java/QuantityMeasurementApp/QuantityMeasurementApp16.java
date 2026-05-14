@@ -1,8 +1,19 @@
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+/* =========================================
+   UC16 - JDBC + N-Tier Architecture
+   Single File Implementation
+   Save as:
+   QuantityMeasurementApp.java
+   ========================================= */
+
 public class QuantityMeasurementApp16 {
 
-    /* =========================
+    /* =========================================
        IMeasurable
-       ========================= */
+       ========================================= */
 
     interface IMeasurable {
         double convertToBaseUnit(double value);
@@ -12,9 +23,9 @@ public class QuantityMeasurementApp16 {
         }
     }
 
-    /* =========================
+    /* =========================================
        LengthUnit
-       ========================= */
+       ========================================= */
 
     enum LengthUnit implements IMeasurable {
 
@@ -39,43 +50,9 @@ public class QuantityMeasurementApp16 {
         }
     }
 
-    /* =========================
-       TemperatureUnit
-       ========================= */
-
-    enum TemperatureUnit implements IMeasurable {
-
-        CELSIUS {
-            public double convertToBaseUnit(double value) {
-                return value;
-            }
-
-            public double convertFromBaseUnit(double baseValue) {
-                return baseValue;
-            }
-        },
-
-        FAHRENHEIT {
-            public double convertToBaseUnit(double value) {
-                return (value - 32) * 5 / 9.0;
-            }
-
-            public double convertFromBaseUnit(double baseValue) {
-                return (baseValue * 9 / 5.0) + 32;
-            }
-        };
-
-        @Override
-        public void validateOperationSupport(String operation) {
-            throw new UnsupportedOperationException(
-                    "Temperature does not support " + operation
-            );
-        }
-    }
-
-    /* =========================
+    /* =========================================
        Quantity Class
-       ========================= */
+       ========================================= */
 
     static class Quantity<U extends Enum<U> & IMeasurable> {
 
@@ -95,19 +72,7 @@ public class QuantityMeasurementApp16 {
             return unit;
         }
 
-        public Quantity<U> convertTo(U targetUnit) {
-
-            double base = unit.convertToBaseUnit(value);
-
-            double result =
-                    targetUnit.convertFromBaseUnit(base);
-
-            return new Quantity<>(result, targetUnit);
-        }
-
         public Quantity<U> add(Quantity<U> other) {
-
-            unit.validateOperationSupport("ADD");
 
             double result =
                     unit.convertToBaseUnit(value)
@@ -119,29 +84,46 @@ public class QuantityMeasurementApp16 {
             );
         }
 
+        public Quantity<U> convertTo(U targetUnit) {
+
+            double base =
+                    unit.convertToBaseUnit(value);
+
+            double result =
+                    targetUnit.convertFromBaseUnit(base);
+
+            return new Quantity<>(result, targetUnit);
+        }
+
         @Override
         public String toString() {
             return "Quantity(" + value + ", " + unit + ")";
         }
     }
 
-    /* =========================
+    /* =========================================
        DTO
-       ========================= */
+       ========================================= */
 
     static class QuantityDTO {
 
         double value;
         String unit;
+
         boolean error;
         String message;
 
-        public QuantityDTO(double value, String unit) {
+        public QuantityDTO(
+                double value,
+                String unit
+        ) {
             this.value = value;
             this.unit = unit;
         }
 
-        public static QuantityDTO error(String msg) {
+        public static QuantityDTO error(
+                String msg
+        ) {
 
             QuantityDTO dto =
                     new QuantityDTO(0, "");
@@ -153,38 +135,180 @@ public class QuantityMeasurementApp16 {
         }
     }
 
-    /* =========================
-       Repository Layer
-       ========================= */
+    /* =========================================
+       Database Exception
+       ========================================= */
 
-    interface IQuantityMeasurementRepository {
-        void save(String data);
+    static class DatabaseException
+            extends RuntimeException {
+
+        public DatabaseException(
+                String message,
+                Throwable cause
+        ) {
+            super(message, cause);
+        }
     }
 
-    static class QuantityMeasurementCacheRepository
+    /* =========================================
+       Connection Pool
+       ========================================= */
+
+    static class ConnectionPool {
+
+        private static final String URL =
+                "jdbc:h2:mem:testdb";
+
+        private static final String USER =
+                "sa";
+
+        private static final String PASSWORD =
+                "";
+
+        public static Connection getConnection() {
+
+            try {
+
+                Class.forName("org.h2.Driver");
+
+                return DriverManager.getConnection(
+                        URL,
+                        USER,
+                        PASSWORD
+                );
+
+            } catch (Exception e) {
+
+                throw new DatabaseException(
+                        "Connection failed",
+                        e
+                );
+            }
+        }
+    }
+
+    /* =========================================
+       Repository Interface
+       ========================================= */
+
+    interface IQuantityMeasurementRepository {
+
+        void save(String operation);
+
+        List<String> getAll();
+    }
+
+    /* =========================================
+       Database Repository
+       ========================================= */
+
+    static class QuantityMeasurementDatabaseRepository
             implements IQuantityMeasurementRepository {
 
-        private static final
-        QuantityMeasurementCacheRepository INSTANCE =
-                new QuantityMeasurementCacheRepository();
+        public QuantityMeasurementDatabaseRepository() {
 
-        private QuantityMeasurementCacheRepository() {
+            createTable();
         }
 
-        public static QuantityMeasurementCacheRepository
-        getInstance() {
-            return INSTANCE;
+        private void createTable() {
+
+            String sql =
+                    "CREATE TABLE IF NOT EXISTS measurements (" +
+                            "id INT AUTO_INCREMENT PRIMARY KEY," +
+                            "operation VARCHAR(255)" +
+                            ")";
+
+            try (
+                    Connection connection =
+                            ConnectionPool.getConnection();
+
+                    Statement statement =
+                            connection.createStatement()
+            ) {
+
+                statement.execute(sql);
+
+            } catch (SQLException e) {
+
+                throw new DatabaseException(
+                        "Table creation failed",
+                        e
+                );
+            }
         }
 
         @Override
-        public void save(String data) {
-            System.out.println("Saved: " + data);
+        public void save(String operation) {
+
+            String sql =
+                    "INSERT INTO measurements(operation) VALUES(?)";
+
+            try (
+                    Connection connection =
+                            ConnectionPool.getConnection();
+
+                    PreparedStatement preparedStatement =
+                            connection.prepareStatement(sql)
+            ) {
+
+                preparedStatement.setString(
+                        1,
+                        operation
+                );
+
+                preparedStatement.executeUpdate();
+
+            } catch (SQLException e) {
+
+                throw new DatabaseException(
+                        "Save failed",
+                        e
+                );
+            }
+        }
+
+        @Override
+        public List<String> getAll() {
+
+            List<String> list =
+                    new ArrayList<>();
+
+            String sql =
+                    "SELECT operation FROM measurements";
+
+            try (
+                    Connection connection =
+                            ConnectionPool.getConnection();
+
+                    PreparedStatement preparedStatement =
+                            connection.prepareStatement(sql);
+
+                    ResultSet resultSet =
+                            preparedStatement.executeQuery()
+            ) {
+
+                while (resultSet.next()) {
+
+                    list.add(
+                            resultSet.getString("operation")
+                    );
+                }
+
+            } catch (SQLException e) {
+
+                throw new DatabaseException(
+                        "Fetch failed",
+                        e
+                );
+            }
+
+            return list;
         }
     }
 
-    /* =========================
-       Service Layer
-       ========================= */
+    /* =========================================
+       Service Interface
+       ========================================= */
 
     interface IQuantityMeasurementService {
 
@@ -197,7 +321,13 @@ public class QuantityMeasurementApp16 {
                 QuantityDTO q1,
                 String targetUnit
         );
+
+        List<String> getSavedOperations();
     }
+
+    /* =========================================
+       Service Implementation
+       ========================================= */
 
     static class QuantityMeasurementServiceImpl
             implements IQuantityMeasurementService {
@@ -234,7 +364,9 @@ public class QuantityMeasurementApp16 {
                 Quantity<LengthUnit> result =
                         a.add(b);
 
-                repository.save(result.toString());
+                repository.save(
+                        result.toString()
+                );
 
                 return new QuantityDTO(
                         result.getValue(),
@@ -268,6 +400,10 @@ public class QuantityMeasurementApp16 {
                                 LengthUnit.valueOf(targetUnit)
                         );
 
+                repository.save(
+                        result.toString()
+                );
+
                 return new QuantityDTO(
                         result.getValue(),
                         result.getUnit().name()
@@ -280,11 +416,17 @@ public class QuantityMeasurementApp16 {
                 );
             }
         }
+
+        @Override
+        public List<String> getSavedOperations() {
+
+            return repository.getAll();
+        }
     }
 
-    /* =========================
-       Controller Layer
-       ========================= */
+    /* =========================================
+       Controller
+       ========================================= */
 
     static class QuantityMeasurementController {
 
@@ -319,6 +461,21 @@ public class QuantityMeasurementApp16 {
             display(result);
         }
 
+        public void showDatabaseRecords() {
+
+            List<String> records =
+                    service.getSavedOperations();
+
+            System.out.println(
+                    "\nDATABASE RECORDS"
+            );
+
+            for (String record : records) {
+
+                System.out.println(record);
+            }
+        }
+
         private void display(
                 QuantityDTO dto
         ) {
@@ -326,7 +483,8 @@ public class QuantityMeasurementApp16 {
             if (dto.error) {
 
                 System.out.println(
-                        "Error: " + dto.message
+                        "Error: "
+                                + dto.message
                 );
 
             } else {
@@ -341,15 +499,14 @@ public class QuantityMeasurementApp16 {
         }
     }
 
-    /* =========================
+    /* =========================================
        MAIN METHOD
-       ========================= */
+       ========================================= */
 
     public static void main(String[] args) {
 
         IQuantityMeasurementRepository repository =
-                QuantityMeasurementCacheRepository
-                        .getInstance();
+                new QuantityMeasurementDatabaseRepository();
 
         IQuantityMeasurementService service =
                 new QuantityMeasurementServiceImpl(
@@ -379,5 +536,7 @@ public class QuantityMeasurementApp16 {
                 q1,
                 "INCHES"
         );
+
+        controller.showDatabaseRecords();
     }
 }
